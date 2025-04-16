@@ -1,22 +1,37 @@
-import { Controller, Get, Sse } from '@nestjs/common';
+import { Controller, Get, Post, Res, Sse } from '@nestjs/common';
 import { StreamService } from './stream.service';
-import { interval, map } from 'rxjs';
+import { interval, map, Observable } from 'rxjs';
 
 @Controller('stream')
 export class StreamController {
   constructor(private readonly streamService: StreamService) {}
 
-//   @Get()
-//   getNextPlay() {
-//     return this.streamService.getNextPlay();
-//   }
+  @Get('start')
+  getNextPlay() {
+    this.streamService.start();
+    return { message: 'Stream started' };
+  }
 
   @Sse()
-  stream(): any {
-    return interval(1000).pipe( // emits once per second
-      map(() => ({
-        data: this.streamService.getNextPlay(),
-      })),
-    );
+  streamGame(@Res() res) {
+
+    return new Observable(observer => {
+      const intervalId = setInterval(() => {
+        if (!this.streamService.isActive()) {
+          clearInterval(intervalId);
+          observer.complete();
+          return;
+        }
+
+        const play = this.streamService.getNextPlay();
+          observer.next({ data: play });
+      }, 1500);
+    });
+  }
+
+  @Post('stop')
+  stopGame() {
+    this.streamService.stop();
+    return { message: 'Stream stopped' };
   }
 }
