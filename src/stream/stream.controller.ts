@@ -25,7 +25,7 @@ export class StreamController {
 
         const play = this.streamService.getNextPlay();
           observer.next({ data: play });
-      }, 1500);
+      }, 4000);
     });
   }
 
