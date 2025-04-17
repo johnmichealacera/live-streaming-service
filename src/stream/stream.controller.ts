@@ -12,6 +12,13 @@ export class StreamController {
     return { message: 'Stream started' };
   }
 
+  @Get('health')
+  check() {
+    console.log('check');
+
+    return { message: 'ok streaming service' };
+  }
+
   @Sse()
   streamGame(@Res() res) {
 
@@ -33,10 +40,5 @@ export class StreamController {
   stopGame() {
     this.streamService.stop();
     return { message: 'Stream stopped' };
-  }
-
-  @Get('health')
-  check() {
-    return { status: 'ok' };
   }
 }
