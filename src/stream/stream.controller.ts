@@ -34,4 +34,9 @@ export class StreamController {
     this.streamService.stop();
     return { message: 'Stream stopped' };
   }
+
+  @Get('health')
+  check() {
+    return { status: 'ok' };
+  }
 }
